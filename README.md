@@ -18,3 +18,10 @@ footer.block = ^{
 NSLog(@"刷新完毕.....footer");   
 };   
 footer.scrollview = self.tableview;//将tableview绑定过去
+＃释放：
+-(void)viewWillDisappear:(BOOL)animated{   
+[super viewWillDisappear:animated];   
+#warning mark --> 退出的时候释放掉   
+[self.Header free];   
+[self.Footer free];   
+}
