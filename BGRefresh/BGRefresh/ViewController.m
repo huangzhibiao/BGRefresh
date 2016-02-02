@@ -65,7 +65,7 @@
     if (_Header == nil) {
         BGHeaderRefreshView* header = [[BGHeaderRefreshView alloc] init];
         _Header = header;
-        header.style = clrcleLine;//设置下拉渐变类型
+        header.style = clrcleAround;
         header.hideIcon = YES;//设置下拉的时候隐藏刷新图片与否
         header.block = ^{
             NSLog(@"刷新完毕.....header");
@@ -78,7 +78,7 @@
     if (_Footer == nil) {
         BGFooterRefreshView* footer = [[BGFooterRefreshView alloc] init];
         _Footer = footer;
-        footer.style = clrcleMatch;//设置下拉渐变类型
+        footer.style = clrcleMatch;
         footer.hideIcon = YES;//设置下拉的时候隐藏刷新图片与否
         footer.block = ^{
             NSLog(@"刷新完毕.....footer");
