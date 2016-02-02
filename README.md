@@ -28,4 +28,5 @@ footer.scrollview = self.tableview;//将tableview绑定过去
 [self.Footer free];   
 }   
 #图片
+录制动态图片有点模糊和卡顿,敬请谅解,真实效果请直接运行工程   
 ![点我查看效果图](https://github.com/huangzhibiao/BGRefresh/tree/master/BGRefresh/image/showGif.gif)
