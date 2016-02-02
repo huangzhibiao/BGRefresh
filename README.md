@@ -28,4 +28,4 @@ footer.scrollview = self.tableview;//将tableview绑定过去
 [self.Footer free];   
 }   
 #图片
-![点我查看效果图](https://github.com/huangzhibiao/BGRefresh/tree/master/BGRefresh/image/showRec.mov)
+![点我查看效果图](https://github.com/huangzhibiao/BGRefresh/tree/master/BGRefresh/image/showGif.gif)
