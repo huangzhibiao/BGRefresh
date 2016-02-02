@@ -26,4 +26,6 @@ footer.scrollview = self.tableview;//将tableview绑定过去
 //退出的时候释放掉   
 [self.Header free];   
 [self.Footer free];   
-}
+}   
+#图片
+![](http://img5.imgtn.bdimg.com/it/u=3223504913,4260750346&fm=21&gp=0.jpg)
