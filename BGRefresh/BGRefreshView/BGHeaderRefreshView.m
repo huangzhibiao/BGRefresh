@@ -48,7 +48,7 @@
 }
 
 -(void)startAnimattion{
-    if (self.pi >= M_PI*2.0){
+    if ((self.pi>=M_PI*2.0) && !self.refreshing){
         self.refreshing = true;
         // 1.增加65的滚动区域
         UIEdgeInsets inset = self.scrollview.contentInset;
@@ -57,8 +57,6 @@
         // 2.设置滚动位置
         self.scrollview.contentOffset = CGPointMake(0, - self.scrollViewInitInset.top - BGRefreshViewWH);
         [super startAnimattion];
-    }else{
-        self.pi = -(self.scrollview.contentOffset.y/100)*2.0*M_PI;
     }
 
 }
@@ -68,12 +66,8 @@
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context
 {
     if ((![@"contentOffset" isEqualToString:keyPath]) || self.refreshing || (self.scrollview.contentOffset.y>0))return;
-    if (self.scrollview.isDragging) {
-        if (self.pi < 2.0*M_PI) {
-            self.pi = -(self.scrollview.contentOffset.y/100)*2.0*M_PI;
-           // NSLog(@"contentoffset = %f keyPay = %f",self.scrollview.contentOffset.y,self.pi);
-        }
-    }
+    
+     self.pi = -(self.scrollview.contentOffset.y/(BGRefreshViewWH*2.0))*2.0*M_PI;
     
     if(!self.scrollview.isDragging){
         if (!self.refreshing) {

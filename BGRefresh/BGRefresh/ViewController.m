@@ -54,9 +54,21 @@
         view.frame = CGRectMake(0, 20, screenW, screenH*0.8);
         view.dataSource = self;
         view.delegate = self;
+        
+        UIButton* btn = [UIButton buttonWithType:UIButtonTypeCustom];
+        btn.frame = CGRectMake((screenW-100)*0.5,screenH-40, 100, 40);
+        [btn setBackgroundColor:[UIColor redColor]];
+        [btn addTarget:self action:@selector(hude) forControlEvents:UIControlEventTouchUpInside];
+        
         [self.view addSubview:view];
+        [self.view addSubview:btn];
     }
 }
+
+-(void)hude{
+    [_Header hideWithState:YES];
+}
+
 /**
  初始化刷新控件
  */
@@ -67,7 +79,11 @@
         _Header = header;
         header.style = clrcleAround;
         header.hideIcon = YES;//设置下拉的时候隐藏刷新图片与否
-        header.block = ^{
+        header.isAuto = NO;//YES/NO(自动/手动) 默认手动停止
+        header.startBlock = ^{
+            NSLog(@"开始刷新.....header");
+        };
+        header.endBlock = ^{
             NSLog(@"刷新完毕.....header");
             [self.datas addObject:[NSString stringWithFormat:@"下拉刷新%ld",random()]];
             [self.tableview reloadData];
@@ -78,9 +94,10 @@
     if (_Footer == nil) {
         BGFooterRefreshView* footer = [[BGFooterRefreshView alloc] init];
         _Footer = footer;
-        footer.style = clrcleMatch;
+        footer.style = clrcleAround;
         footer.hideIcon = YES;//设置下拉的时候隐藏刷新图片与否
-        footer.block = ^{
+        footer.isAuto = YES;
+        footer.endBlock = ^{
             NSLog(@"刷新完毕.....footer");
             if (self.datas.count >0 ) {
                 [self.datas removeObject:[self.datas lastObject]];

@@ -17,10 +17,17 @@
         _pi = 0.0;
         _refreshing = false;
         self.backgroundColor = [UIColor clearColor];
+        //出事刷新图片控件
         UIImageView* iv = [[UIImageView alloc] init];
         self.refreshIcon = iv;
         iv.image = [UIImage imageNamed:@"cts_ico_card_loading"];
+        //初始化文字提示控件
+        UILabel* lab = [[UILabel alloc] init];
+        lab.font = [UIFont systemFontOfSize:14.0];
+        lab.textColor = [UIColor grayColor];
+        lab.text = @"刷新完毕";
         [self addSubview:iv];
+        [self addSubview:lab];
     }
     return self;
 }
@@ -31,7 +38,9 @@
         if ([[view class] isSubclassOfClass:[UIImageView class]]) {
         view.frame = CGRectMake((BGRefreshViewWH-20)*0.5,(BGRefreshViewWH-20)*0.5, 20, 20);
             break;
-        }
+        }else if ([[view class] isSubclassOfClass:[UILabel class]]){
+            
+        }else;
     }
 }
 
@@ -110,20 +119,34 @@
 }
 
 -(void)free{
+    // 移除之前的监听器
+    [self.scrollview removeObserver:self forKeyPath:@"contentOffset" context:nil];
+    self.scrollview = nil;
     [self removeFromSuperview];
 }
 
 -(void)startAnimattion{
+    //NSLog(@"开始动画......");
     self.refreshIcon.hidden = NO;
+    _state = YES;//启动动画时默认会刷新成功
+    if (self.startBlock) {
+        self.startBlock();
+    }
     CABasicAnimation* rotationAnimation;
     rotationAnimation = [CABasicAnimation animationWithKeyPath:@"transform.rotation.z"];
     rotationAnimation.toValue = [NSNumber numberWithFloat: M_PI * 2.0 ];
-    rotationAnimation.duration = 1.0;
     rotationAnimation.cumulative = YES;
-    rotationAnimation.repeatCount = 2;
+    if (!self.isAuto) {
+        rotationAnimation.duration = 1.0;
+        rotationAnimation.repeatCount = NSIntegerMax;
+    }else{
+        rotationAnimation.duration = 1.0;
+        rotationAnimation.repeatCount = 2;
+    }
     rotationAnimation.delegate = self;
     //self.refreshIcon.layer.anchorPoint = CGPointMake(0.5,0.5);//以右下角为原点转，（0,0）是左上角转，（0.5,0,5）心中间转，其它以此类推
     [self.refreshIcon.layer addAnimation:rotationAnimation forKey:@"rotationAnimation"];
+    [self performSelector:@selector(hideRefresh) withObject:self afterDelay:10.0];
     switch (self.style) {
             case clrcleFromBigToSmall:
             self.pi = 2*M_PI;
@@ -135,13 +158,26 @@
 
 };
 
+/**
+ 十秒以后要是还没刷新好则回收控件提示失败
+ */
+-(void)hideRefresh{
+    [self hideWithState:NO];
+}
+
+/**
+ 动画停止
+ */
 -(void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
+     //NSLog(@"结束动画......");
+    [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(hideRefresh) object:self];//取消延时执行的函数(参数要匹配)
     self.pi = 0.0;
-    if (self.block) {
-        self.block();
-        [self hideHeader];
+    if (_state) {
+        self.refreshIcon.image = [UIImage imageNamed:@"success"];//刷新成功
+    }else{
+        self.refreshIcon.image = [UIImage imageNamed:@"error"];//刷新失败
     }
-    self.refreshIcon.hidden = self.hideIcon?YES:NO;
+    [self performSelector:@selector(hideHeader) withObject:self afterDelay:0.7];
     NSLog(@" subviewsCount--- %ld",self.scrollview.subviews.count);
 }
 
@@ -149,8 +185,22 @@
  收回刷新控件
  */
 -(void)hideHeader{
+    if (self.endBlock) {
+        self.endBlock();
+    }
+    self.refreshIcon.hidden = self.hideIcon?YES:NO;
     self.scrollview.contentInset = self.scrollViewInitInset;
     self.refreshing = false;
+    self.refreshIcon.image = [UIImage imageNamed:@"cts_ico_card_loading"];
 }
 
+/**
+ 隐藏整个控件
+ */
+-(void)hideWithState:(BOOL)state{
+    _state = state;
+    if ([self.refreshIcon.layer animationForKey:@"rotationAnimation"]) {
+        [self.refreshIcon.layer removeAnimationForKey:@"rotationAnimation"];
+    }
+}
 @end
